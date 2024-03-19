@@ -1,0 +1,49 @@
+version: "3.7"
+
+# FRONTEND
+services:
+  frontend:
+    container_name: vue-frontend-container
+    image: swtp19/vue-frontend-image
+    ports:
+    # ip VM : port VM : port Docker
+      #- 172.26.92.98:80:80
+      - 80:80
+    #volumes:
+    #  - ./frontend/vue-frontend/:/app
+    restart: unless-stopped
+    links: 
+      - backend
+    networks:
+      - backbone-network
+
+# BACKEND
+  backend:
+    container_name: spring-boot-backend-container
+    image: swtp19/spring-boot-backend-image
+    ports:
+      - 5000:5000
+    restart: unless-stopped
+    networks:
+      - backbone-network
+
+# DATABASE
+  db:
+    container_name: postgres_db
+    environment:
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=testdb
+    image: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - backbone-network
+
+networks:
+    backbone-network:
+    
+volumes:
+    postgres_data:
